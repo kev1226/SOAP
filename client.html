@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOAP Client</title>
+</head>
+<body>
+    <h2>Probar Servicio SOAP</h2>
+    <label for="name">Nombre:</label>
+    <input type="text" id="name" placeholder="Ingrese un nombre">
+    <button onclick="sendSoapRequest()">Enviar</button>
+    <div id="response" style="margin-top: 20px;"></div>
+
+    <script>
+        function sendSoapRequest() {
+            const name = document.getElementById('name').value;
+            const soapEnvelope = `
+                <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                                  xmlns:web="http://www.example.org/">
+                    <soapenv:Header/>
+                    <soapenv:Body>
+                        <web:sayHello>
+                            <name>${name}</name>
+                        </web:sayHello>
+                    </soapenv:Body>
+                </soapenv:Envelope>
+            `;
+
+            fetch('http://localhost:3000/wsdl', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/xml',
+                },
+                body: soapEnvelope,
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('response').innerText = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('response').innerText = 'Error al enviar la solicitud SOAP.';
+            });
+        }
+    </script>
+</body>
+</html>
